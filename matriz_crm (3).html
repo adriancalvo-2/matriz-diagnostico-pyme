@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2B CRM Decision Support System — Anexo C</title>
+<style>
+  :root{--bg:#F7F6F2;--surface:#fff;--surface-2:#F0EFE9;--text-primary:#1A1916;--text-secondary:#4A4842;--text-muted:#888680;--border:rgba(26,25,22,.10);--border-mid:rgba(26,25,22,.18);--accent:#1A3A5C;--accent-light:#E6EDF5;--green:#1B6B3A;--green-bg:#EAF4EE;--amber:#7A4F00;--amber-bg:#FEF3DC;--red:#8B1A1A;--red-bg:#FDEAEA;--radius:6px;--radius-lg:12px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,serif;background:var(--bg);color:var(--text-primary);line-height:1.6;min-height:100vh}
+  header{background:var(--accent);padding:2.5rem 2rem 2rem}
+  .header-inner{max-width:760px;margin:0 auto}
+  .header-label{font-family:Arial,sans-serif;font-size:11px;letter-spacing:.12em;color:rgba(255,255,255,.5);margin-bottom:.5rem}
+  header h1{font-size:1.7rem;font-weight:400;color:#fff;margin-bottom:.4rem}
+  header p{font-size:.9rem;color:rgba(255,255,255,.65);font-family:Arial,sans-serif;max-width:560px;line-height:1.5}
+  main{max-width:760px;margin:0 auto;padding:2rem 1.5rem 4rem}
+  .section-title{font-family:Arial,sans-serif;font-size:.68rem;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;margin-bottom:.9rem}
+  .dim-grid{display:grid;gap:.75rem}
+  .dim-card{background:var(--surface);border:.5px solid var(--border-mid);border-radius:var(--radius-lg);padding:1.1rem 1.4rem}
+  .dim-header{display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem}
+  .dim-tag{font-family:Arial,sans-serif;font-size:11px;font-weight:700;background:var(--accent);color:#fff;padding:2px 8px;border-radius:3px;letter-spacing:.06em}
+  .dim-name{font-size:.95rem}
+  .dim-weight{font-family:Arial,sans-serif;font-size:11px;color:var(--text-muted);margin-left:auto}
+  .level-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+  .level-btn{border:.5px solid var(--border-mid);background:var(--surface);border-radius:var(--radius);padding:.65rem .5rem;cursor:pointer;text-align:center;transition:background .12s,border-color .12s;font-family:Arial,sans-serif}
+  .level-btn:hover{background:var(--surface-2)}
+  .level-btn.selected{background:var(--accent-light);border-color:var(--accent)}
+  .level-num{font-size:20px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:2px;font-family:Georgia,serif}
+  .level-btn.selected .level-num{color:var(--accent)}
+  .level-label{font-size:11px;font-weight:600;color:var(--text-secondary);display:block}
+  .level-btn.selected .level-label{color:var(--accent)}
+  .compute-wrap{margin:1.25rem 0 .5rem;display:flex;align-items:center;gap:.75rem}
+  .btn-compute{background:var(--accent);color:#fff;border:none;border-radius:var(--radius);padding:.7rem 1.75rem;font-family:Arial,sans-serif;font-size:.88rem;cursor:pointer;transition:opacity .12s}
+  .btn-compute:hover{opacity:.87}
+  .btn-reset{background:none;color:var(--text-muted);border:.5px solid var(--border-mid);border-radius:var(--radius);padding:.7rem 1.1rem;font-family:Arial,sans-serif;font-size:.82rem;cursor:pointer;transition:background .12s}
+  .btn-reset:hover{background:var(--surface-2)}
+  #result{display:none;border-radius:var(--radius-lg);border:.5px solid var(--border-mid);overflow:hidden;margin-top:.25rem;background:var(--surface)}
+  .res-head{padding:1.25rem 1.5rem;border-bottom:.5px solid var(--border)}
+  .res-head-row{display:flex;align-items:flex-start;gap:.9rem}
+  .semaphore{width:14px;height:14px;border-radius:50%;flex-shrink:0;margin-top:5px}
+  .sem-red{background:#C0392B}.sem-amber{background:#D4870A}.sem-green{background:#1B6B3A}
+  .res-scenario{font-family:Arial,sans-serif;font-size:.72rem;color:var(--text-muted);letter-spacing:.04em;margin-bottom:3px}
+  .res-title{font-size:1.2rem;font-weight:400;line-height:1.25}
+  .vector-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:.5px solid var(--border)}
+  .vcell{padding:.85rem 1.1rem;border-right:.5px solid var(--border);font-family:Arial,sans-serif}
+  .vcell:last-child{border-right:none}
+  .vcell-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+  .vcell-val{font-size:1.35rem;font-weight:700;font-family:Georgia,serif}
+  .vcell-sub{font-size:10px;color:var(--text-secondary);margin-top:2px;line-height:1.35}
+  .res-blocks{display:grid;grid-template-columns:1fr 1fr}
+  .rblock{padding:1.1rem 1.4rem;border-right:.5px solid var(--border);border-bottom:.5px solid var(--border)}
+  .rblock:nth-child(2n){border-right:none}
+  .rblock.full{grid-column:1/-1;border-right:none}
+  .rblock:last-child,.rblock.full:last-child{border-bottom:none}
+  .rblock-label{font-family:Arial,sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.5rem}
+  .rblock-text{font-family:Arial,sans-serif;font-size:.82rem;color:var(--text-secondary);line-height:1.55}
+  .pill{display:inline-block;font-family:Arial,sans-serif;font-size:11px;padding:2px 9px;border-radius:20px;margin:2px 3px 2px 0;font-weight:500}
+  .pill-green{background:var(--green-bg);color:var(--green)}
+  .pill-amber{background:var(--amber-bg);color:var(--amber)}
+  .pill-red{background:var(--red-bg);color:var(--red)}
+  .budget-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-family:Arial,sans-serif;font-size:.8rem;padding:3px 0;border-bottom:.5px solid var(--border)}
+  .budget-row:last-child{border-bottom:none}
+  .budget-label{color:var(--text-secondary);flex-shrink:0}
+  .budget-value{font-weight:600;text-align:right}
+  .step{font-family:Arial,sans-serif;font-size:.8rem;color:var(--text-secondary);padding:3px 0 3px 14px;position:relative;line-height:1.45}
+  .step::before{content:'→';position:absolute;left:0;color:var(--accent);font-size:10px;top:4px}
+  .footer-note{margin-top:2.5rem;padding-top:1.25rem;border-top:.5px solid var(--border-mid);font-family:Arial,sans-serif;font-size:.76rem;color:var(--text-muted);line-height:1.65}
+  .footer-note strong{color:var(--text-secondary);font-weight:600}
+  @media(max-width:580px){.level-selector{grid-template-columns:1fr}.res-blocks{grid-template-columns:1fr}.rblock{border-right:none}.vector-strip{grid-template-columns:repeat(2,1fr)}.vcell:nth-child(2){border-right:none}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+<div class="header-label">Anexo C · TFG Adrián Calvo Palacios</div>
+<h1>B2B CRM Decision Support System</h1>
+<p>Introduzca el vector diagnóstico V = (DIG, PRE, ORG) obtenido en el Anexo B para recibir la prescripción directiva adaptada a su PYME.</p>
+</div></header>
+<main>
+<div class="section-title">Dimensiones de entrada · Vector V = (DIG, PRE, ORG)</div>
+<div class="dim-grid">
+<div class="dim-card"><div class="dim-header"><span class="dim-tag">DIG</span><span class="dim-name">Digitalización previa</span><span class="dim-weight">Peso 30 %</span></div>
+<div class="level-selector" data-dim="DIG"><button class="level-btn" data-val="1"><span class="level-num">1</span><span class="level-label">Bajo</span></button><button class="level-btn" data-val="2"><span class="level-num">2</span><span class="level-label">Medio</span></button><button class="level-btn" data-val="3"><span class="level-num">3</span><span class="level-label">Alto</span></button></div></div>
+<div class="dim-card"><div class="dim-header"><span class="dim-tag">PRE</span><span class="dim-name">Presupuesto disponible</span><span class="dim-weight">Peso 30 %</span></div>
+<div class="level-selector" data-dim="PRE"><button class="level-btn" data-val="1"><span class="level-num">1</span><span class="level-label">Bajo</span></button><button class="level-btn" data-val="2"><span class="level-num">2</span><span class="level-label">Medio</span></button><button class="level-btn" data-val="3"><span class="level-num">3</span><span class="level-label">Alto</span></button></div></div>
+<div class="dim-card"><div class="dim-header"><span class="dim-tag">ORG</span><span class="dim-name">Madurez organizativa</span><span class="dim-weight">Peso 40 %</span></div>
+<div class="level-selector" data-dim="ORG"><button class="level-btn" data-val="1"><span class="level-num">1</span><span class="level-label">Bajo</span></button><button class="level-btn" data-val="2"><span class="level-num">2</span><span class="level-label">Medio</span></button><button class="level-btn" data-val="3"><span class="level-num">3</span><span class="level-label">Alto</span></button></div></div>
+</div>
+<div class="compute-wrap"><button class="btn-compute" onclick="compute()">Obtener prescripción directiva</button><button class="btn-reset" onclick="reset()">Reiniciar</button></div>
+<div id="result"></div>
+<div class="footer-note"><strong>Fuente académica:</strong> Calvo Palacios, A. (2026). <em>Marketing relacional y modelo de implantación CRM en la PYME industrial B2B</em> (TFG). Epígrafes 3.2, 4.3, 5.1–5.4, 6.2 y Anexos A–C. Algoritmo: S = 0,30·DIG + 0,30·PRE + 0,40·ORG (Nguyen &amp; Waring, 2013; Saaty, 1980; Tornatzky &amp; Fleischer, 1990). Presupuestos: Tabla 15, calibrada sobre el caso base de 5 usuarios (Brynjolfsson &amp; Hitt, 2000; David et al., 2002). Los importes son estimaciones orientativas, no cotizaciones de proveedor. Herramienta client-side: sin servidores externos ni cookies.</div>
+</main>
+<script>
+const state={DIG:null,PRE:null,ORG:null};
+document.querySelectorAll('.level-selector').forEach(sel=>{sel.querySelectorAll('.level-btn').forEach(btn=>{btn.addEventListener('click',()=>{sel.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');state[sel.dataset.dim]=parseInt(btn.dataset.val);});});});
+function reset(){state.DIG=state.PRE=state.ORG=null;document.querySelectorAll('.level-btn').forEach(b=>b.classList.remove('selected'));const r=document.getElementById('result');r.style.display='none';r.innerHTML='';}
+
+// ── Presupuestos por ruta (Tabla 15, caso base 5 usuarios) ──
+const BUDGET={
+ VETO:{capex:'0 €',opex:'0 €/mes',tco:'1.380 € (Fase 0, dedicación interna)',payback:'No aplica (filtro previo)'},
+ ULTRA:{capex:'0 €',opex:'0 €/mes',tco:'345 € (Año 1 y acumulado a 3 años)',payback:'Inmediato'},
+ FREEMIUM:{capex:'0 €',opex:'0 €/mes',tco:'460 € (Año 1 y acumulado a 3 años)',payback:'Inmediato'},
+ STANDALONE:{capex:'600 €',opex:'≈ 83 €/mes (1.000 €/año)',tco:'2.300 € (Año 1) · 4.500 € (3 años)',payback:'4 a 6 meses'},
+ B:{capex:'1.800 €',opex:'100 €/mes (1.200 €/año)',tco:'4.370 € (Año 1) · 7.170 € (3 años)',payback:'7 meses'},
+ C:{capex:'5.500 €',opex:'375 €/mes (4.500 €/año)',tco:'13.570 € (Año 1) · 23.170 € (3 años)',payback:'14 meses'}};
+
+// ── Hojas de ruta por escenario (capítulo 5) ──
+const ROADMAP={
+ VETO:['Fase 0 (4–8 semanas): designar Champion interno con 15 %–20 % de jornada liberada','Rediseñar incentivos: 70 %–80 % base/cierre · 10 %–15 % calidad del dato · 10 %–15 % retención (CLV)','Formalizar el pacto de gobernanza de cuentas: el CRM protege la cartera del comercial, no la expropia','Mapear el embudo B2B: Prospección → Calificación → Propuesta → Negociación → Cierre','Gate KPI de salida: 100 % de la fuerza comercial en talleres y 1 responsable formalizado'],
+ ULTRA:['Fase 0 (4–8 semanas): consolidar el fichero maestro y depurar duplicados (≥ 95 % sin duplicidades)','Diseñar plantilla normalizada con menús desplegables obligatorios y bloqueo de celdas (Panko, 2008)','Centralización absoluta: prohibidas las copias locales; único fichero maestro en la nube','Auditoría semanal del promotor interno sobre completitud de fichas y omisiones','Planificar migración a Freemium en cuanto se desbloquee la capacidad financiera'],
+ FREEMIUM:['Fase 0 (4–8 semanas): depurar el repositorio maestro y formalizar la ficha única de cliente','Alta en la capa gratuita y carga de la base de datos desduplicada','Monitorización mensual de umbrales: contactos almacenados, usuarios y límites de correo','Copias de seguridad mensuales en CSV estructurado para evitar dependencia cautiva','Plan de transición a plan de pago cuando la disciplina comercial incremente la facturación'],
+ STANDALONE:['Fase 0 (4–8 semanas): saneamiento del dato y mapeo formal del embudo comercial','Parametrizar el pipeline B2B en la plataforma y definir criterios objetivos de avance','Prueba de concepto (PoC) de 14 días con 2–3 comerciales para auditar el ajuste tarea-tecnología','Conciliación manual semanal entre el CRM y el sistema de facturación','Integridad de condiciones: prohibido alterar precios fuera de la ficha oficial del CRM'],
+ B:['Semanas 1–3: parametrización de entidades, embudo y criterios de avance; diccionario de datos','Semanas 4–6: migración de la base maestra y sincronización con correo, calendario y ERP/facturación','Semanas 7–9: capacitación orientada a utilidad percibida (TAM) y piloto controlado de 14 días','Semanas 10–12: Go-Live, apagado formal de registros paralelos y primer comité directivo con paneles CRM','Control posterior: adopción activa ≥ 90 %, completitud ≥ 95 % y registro en menos de 12 h tras la visita'],
+ C:['Semanas 1–6: repositorio analítico centralizado, integración bidireccional vía API (CRM ↔ ERP) y ciclo Quote-to-Cash','Semanas 7–14: modelización predictiva — lead scoring, alerta temprana de abandono y CLV dinámico con ABC y WACC','Semanas 15–18: automatización prescriptiva (Next-Best-Offer), disparadores por eventos y asistencia generativa (PLN)','Semanas 19–24: calibración de umbrales (Neslin et al., 2006), protocolo de autonomía modificable y Go-Live analítico','Requisito previo: cartera > 150 cuentas, histórico ≥ 24 meses y ≥ 30 eventos de abandono documentados']};
+
+const TOOLS={
+ VETO:{list:[],cls:'pill-red'},
+ ULTRA:{list:['Google Sheets corporativo','Microsoft Lists','Airtable'],cls:'pill-amber'},
+ FREEMIUM:{list:['HubSpot CRM Free','Zoho CRM Free'],cls:'pill-amber'},
+ STANDALONE:{list:['Pipedrive','monday sales CRM'],cls:'pill-amber'},
+ B:{list:['Pipedrive','Zoho CRM Standard / Professional'],cls:'pill-green'},
+ C:{list:['Microsoft Dynamics 365 Sales','HubSpot Sales Hub Professional'],cls:'pill-green'}};
+
+const SEM={VETO:'red',ULTRA:'amber',FREEMIUM:'amber',STANDALONE:'amber',B:'green',C:'green'};
+const ROUTE_LABEL={VETO:'Fase 0: Veto absoluto',ULTRA:'Fase 0: Ruta Ultra-Lite',FREEMIUM:'Fase 0: Ruta Freemium',STANDALONE:'Fase 0: Ruta Stand-Alone',B:'Escenario B: CRM Estándar',C:'Escenario C: Analítico / IA'};
+
+// ── Los 27 perfiles del Anexo A ──
+const P={
+'1,1,1':{id:'01',arq:'Inviabilidad operativa total',dir:'Bloqueo total de compras; reestructuración interna previa obligatoria.',why:'Las tres dimensiones se sitúan en Nivel 1. El Filtro 1 activa el Veto absoluto de forma inmediata: sin infraestructura, sin partida presupuestaria y con resistencia activa al cambio, cualquier adquisición de software destruiría tesorería sin generar retorno alguno.'},
+'1,1,2':{id:'02',arq:'Vulnerabilidad instrumental',dir:'Plantillas comerciales estructuradas en Google Sheets / Airtable.',why:'La madurez organizativa (ORG = 2) acredita disciplina suficiente para sostener una solución ligera, pero la doble restricción instrumental (DIG = 1 y PRE = 1) impide adquirir herramientas de pago o que exijan integración técnica.'},
+'1,1,3':{id:'03',arq:'Brecha técnica solventable',dir:'Hojas colaborativas blindadas; capital humano altamente receptivo.',why:'La cultura orientada al dato (ORG = 3) garantiza una disciplina de registro excepcional. La doble carencia en digitalización y presupuesto es el único freno para acceder a soluciones superiores, lo que sitúa a este perfil como candidato prioritario a promoción tras la Fase 0.'},
+'1,2,1':{id:'04',arq:'Vulnerabilidad cultural',dir:'Presupuesto estéril por rechazo comercial; intervención en liderazgo.',why:'La resistencia activa del equipo de ventas (ORG = 1) invalida la capacidad financiera disponible. Invertir en licencias sobre una plantilla que percibe el CRM como fiscalización garantiza el fracaso: el Filtro 1 antepone el factor humano a la solvencia.'},
+'1,2,2':{id:'05',arq:'Brecha técnica con liquidez',dir:'CRM de embudo visual ágil (Pipedrive) con conciliación manual.',why:'La infraestructura digital precaria (DIG = 1) impide cualquier integración vía API a corto plazo, pero el presupuesto (PRE = 2) y la madurez del equipo (ORG = 2) permiten implantar una solución puente centrada en la trazabilidad del pipeline (Alter, 2014).'},
+'1,2,3':{id:'06',arq:'Brecha técnica / Alta cultura',dir:'Pipedrive / monday CRM; disciplina comercial compensa déficit digital.',why:'La cultura orientada al dato (ORG = 3) compensa de forma sustancial la carencia de infraestructura. La predisposición activa al registro minimiza los riesgos habituales del Stand-Alone y maximiza la calidad del dato desde el arranque.'},
+'1,3,1':{id:'07',arq:'Riesgo severo de despilfarro',dir:'Prohibido adquirir software; alta solvencia saboteada por la plantilla.',why:'La alta disponibilidad financiera (PRE = 3) hace especialmente crítico el veto: es la combinación que más valor destruye, porque un presupuesto elevado desplegado sobre resistencia activa amplifica el conflicto en lugar de resolverlo.'},
+'1,3,2':{id:'08',arq:'Desconexión técnica solventada',dir:'CRM comercial independiente con consultoría de integración puente.',why:'Solvencia financiera (PRE = 3) y madurez del equipo (ORG = 2) son activos sólidos, pero la infraestructura precaria (DIG = 1) obliga a una solución puente. La holgura presupuestaria permite contratar consultoría que diseñe el protocolo de conciliación.'},
+'1,3,3':{id:'09',arq:'Alta tracción con déficit base',dir:'Suite comercial avanzada; máxima alineación y receptividad en ventas.',why:'Presupuesto y cultura en nivel máximo, con la infraestructura (DIG = 1) como única barrera. Aunque su puntuación alcanza S = 2,40, el Filtro 1 tiene precedencia estricta y deriva el perfil a contingencia hasta resolver la limitación instrumental.'},
+'2,1,1':{id:'10',arq:'Boicot interno con ERP',dir:'Datos en ERP pero resistencia activa en ventas y déficit de caja.',why:'La base digital existente (DIG = 2) no compensa la concurrencia de resistencia activa (ORG = 1) y ausencia de presupuesto (PRE = 1). Disponer de ERP no habilita el despliegue si falta la alineación cultural y la capacidad financiera.'},
+'2,1,2':{id:'11',arq:'Restricción financiera',dir:'Capa básica sin coste de licencias: HubSpot Free o Zoho Free.',why:'Infraestructura digital básica (DIG = 2) y compromiso del equipo (ORG = 2) son activos aprovechables; la restricción es exclusivamente presupuestaria (PRE = 1). El modelo freemium elimina la barrera de entrada con OPEX de licencias igual a cero.'},
+'2,1,3':{id:'12',arq:'Cultura analítica sin caja',dir:'Versión gratuita maximizada; procesos rigurosos y apertura al dato.',why:'La cultura orientada al dato (ORG = 3) es el activo diferencial: el equipo explota al máximo las funcionalidades de la capa gratuita con una disciplina de registro excepcional. La única limitación es la iliquidez (PRE = 1).'},
+'2,2,1':{id:'13',arq:'Boicot operativo latente',dir:'Solvencia y digitalización bloqueadas por resistencia de ventas.',why:'La firma reúne infraestructura (DIG = 2) y presupuesto (PRE = 2) suficientes para el Escenario B, pero la resistencia del equipo comercial (ORG = 1) invalida la inversión. Resuelto el factor humano, este perfil accede directamente al Escenario B.'},
+'2,2,2':{id:'14',arq:'Madurez relacional media',dir:'Pipedrive / Zoho Standard; formalización del pipeline y embudo de ventas.',why:'Perfil equilibrado sin cuellos de botella (todas las variables ≥ 2). La Puntuación Híbrida S = 2,00 sitúa a la firma en el umbral inferior del Escenario B, con madurez suficiente para estandarizar el pipeline y blindar la memoria corporativa de la cartera.'},
+'2,2,3':{id:'15',arq:'Madurez analítica emergente',dir:'Dynamics 365 Sales / HubSpot Pro; lead scoring y flujos automatizados.',why:'La cultura organizativa avanzada (ORG = 3) eleva la puntuación a S = 2,40, umbral exacto de acceso al Escenario C. La masa crítica de datos del ERP y el presupuesto estándar permiten iniciar la analítica predictiva.'},
+'2,3,1':{id:'16',arq:'Ocultación de conocimiento',dir:'Solvencia financiera inútil si la fuerza comercial oculta carteras privadas.',why:'La combinación de alta disponibilidad financiera (PRE = 3) con resistencia activa (ORG = 1) es especialmente crítica: los comerciales retienen sus carteras en agendas privadas y la inversión solo amplificaría el conflicto de propiedad psicológica (Pierce et al., 2001).'},
+'2,3,2':{id:'17',arq:'Madurez relacional solvente',dir:'Zoho Pro / Pipedrive con conectores nativos a contabilidad y facturación.',why:'Perfil sin cuellos de botella y con holgura presupuestaria (PRE = 3). La puntuación S = 2,30 lo sitúa en el Escenario B, con margen para una implantación bien acompañada y conectores nativos al sistema de facturación.'},
+'2,3,3':{id:'18',arq:'Madurez analítica avanzada',dir:'Suite CRM integrada; automatización completa del ciclo Quote-to-Cash.',why:'Puntuación S = 2,70 con alta solvencia financiera y cultura del dato consolidada. La firma dispone de capacidad para automatizar el ciclo Quote-to-Cash completo y desplegar modelos predictivos de retención desde el primer año.'},
+'3,1,1':{id:'19',arq:'Subutilización tecnológica',dir:'Infraestructura digital puntera desaprovechada por falta de liderazgo.',why:'Es el caso más paradójico del bloque vulnerable: la infraestructura avanzada (DIG = 3) es un activo latente que no puede activarse por la concurrencia de resistencia activa (ORG = 1) y ausencia de presupuesto (PRE = 1).'},
+'3,1,2':{id:'20',arq:'Integración sin presupuesto',dir:'Conexión de capa gratuita (HubSpot Free) al ecosistema digital existente.',why:'La infraestructura avanzada (DIG = 3) permite conectar la capa gratuita al ecosistema existente mediante APIs nativas, eliminando las limitaciones habituales del Freemium. La restricción es exclusivamente presupuestaria.'},
+'3,1,3':{id:'21',arq:'Rigor técnico sin liquidez',dir:'CRM gratuito sincronizado vía APIs; excelente disciplina operativa.',why:'Infraestructura y cultura en nivel máximo, con el presupuesto (PRE = 1) como única barrera. Aunque alcanza S = 2,40, el Filtro 1 tiene precedencia y deriva el perfil a Freemium, ruta que en la práctica rinde de forma comparable al Escenario B.'},
+'3,2,1':{id:'22',arq:'Resistencia pasiva en ventas',dir:'Inversión congelada; prioridad absoluta al plan de incentivos y cambio.',why:'La empresa dispone de infraestructura avanzada (DIG = 3) y presupuesto suficiente (PRE = 2), pero el rechazo del equipo comercial —activo o en forma de boicot silencioso— haría fracasar cualquier implantación.'},
+'3,2,2':{id:'23',arq:'Madurez relacional integrada',dir:'CRM SaaS plenamente bidireccional con el ERP corporativo.',why:'Infraestructura digital avanzada (DIG = 3) que habilita una integración CRM-ERP bidireccional desde el arranque. La puntuación S = 2,30 confirma el Escenario B, con una implantación técnicamente más fluida que la de otros perfiles del mismo escenario.'},
+'3,2,3':{id:'24',arq:'Madurez analítica / predictiva',dir:'Modelización de retención predictiva y cálculo dinámico del CLV.',why:'La combinación de infraestructura avanzada y cultura del dato máxima eleva la puntuación a S = 2,70. La calidad de los datos de entrenamiento permite abordar modelos predictivos de retención y estimación dinámica del CLV con garantías.'},
+'3,3,1':{id:'25',arq:'Capacidad técnica saboteada',dir:'Máximos recursos destruidos por fricción humana y desconfianza interna.',why:'Infraestructura y presupuesto en nivel máximo, íntegramente bloqueados por la resistencia del equipo (ORG = 1). Sin intervención cultural previa, ninguna configuración destruiría más capital que esta. Resuelto ORG, el perfil accede al Escenario C.'},
+'3,3,2':{id:'26',arq:'Madurez corporativa alta',dir:'Microsoft Dynamics 365 Sales / HubSpot Enterprise; analítica avanzada.',why:'Infraestructura y presupuesto máximos otorgan una puntuación S = 2,60. La madurez organizativa estándar (ORG = 2) resulta suficiente para gestionar la complejidad del Escenario C siempre que se refuerce el soporte y el acompañamiento.'},
+'3,3,3':{id:'27',arq:'Madurez directiva plena',dir:'Despliegue integral: IA predictiva/generativa, Next-Best-Action y BI.',why:'Puntuación máxima S = 3,00. Las tres dimensiones en nivel óptimo habilitan el despliegue más completo del modelo: analítica predictiva, automatización prescriptiva, asistencia generativa (PLN) y cuadros de mando de inteligencia de negocio.'}};
+
+function route(d,p,o){if(o===1)return'VETO';if(d===1&&p===1)return'ULTRA';if(p===1)return'FREEMIUM';if(d===1)return'STANDALONE';return(0.30*d+0.30*p+0.40*o)>=2.40?'C':'B';}
+
+function compute(){
+ const{DIG,PRE,ORG}=state;
+ if(DIG===null||PRE===null||ORG===null){alert('Seleccione un nivel para cada una de las tres dimensiones antes de obtener la prescripción.');return;}
+ const key=`${DIG},${PRE},${ORG}`,pr=P[key],r=route(DIG,PRE,ORG);
+ const S=(0.30*DIG+0.30*PRE+0.40*ORG).toFixed(2).replace('.',',');
+ const isT1=(r==='B'||r==='C'),sem=SEM[r],b=BUDGET[r],t=TOOLS[r];
+ const lev=v=>['','Bajo','Medio','Alto'][v];
+ const headBg=sem==='green'?'var(--green-bg)':sem==='amber'?'var(--amber-bg)':'var(--red-bg)';
+ const semTxt=sem==='green'?'Zona verde':sem==='amber'?'Zona ámbar':'Zona roja';
+ const tools=t.list.length?t.list.map(x=>`<span class="pill ${t.cls}">${x}</span>`).join(''):'<span class="pill pill-red">Ninguna — bloqueo preventivo de compra</span>';
+ const steps=ROADMAP[r].map(s=>`<div class="step">${s}</div>`).join('');
+ const filtLabel=isT1?'Puntuación híbrida':'Filtro 1 · precedencia';
+ const filtVal=isT1?`S = ${S}`:(sem==='red'?'ORG = 1':'Fase 0');
+ const filtSub=isT1?(r==='C'?'2,40 ≤ S ≤ 3,00':'2,00 ≤ S < 2,40'):`S = ${S} (no determinante)`;
+ const el=document.getElementById('result');
+ el.style.display='block';
+ el.innerHTML=`
+ <div class="res-head" style="background:${headBg}"><div class="res-head-row">
+  <div class="semaphore sem-${sem}"></div>
+  <div><div class="res-scenario">Perfil ${pr.id} · ${ROUTE_LABEL[r]} · ${semTxt}</div>
+  <div class="res-title">${pr.arq}</div></div></div></div>
+ <div class="vector-strip">
+  <div class="vcell"><div class="vcell-label">DIG</div><div class="vcell-val">${DIG}</div><div class="vcell-sub">${lev(DIG)}</div></div>
+  <div class="vcell"><div class="vcell-label">PRE</div><div class="vcell-val">${PRE}</div><div class="vcell-sub">${lev(PRE)}</div></div>
+  <div class="vcell"><div class="vcell-label">ORG</div><div class="vcell-val">${ORG}</div><div class="vcell-sub">${lev(ORG)}</div></div>
+  <div class="vcell"><div class="vcell-label">${filtLabel}</div><div class="vcell-val" style="font-size:1rem;margin-top:5px">${filtVal}</div><div class="vcell-sub">${filtSub}</div></div>
+ </div>
+ <div class="res-blocks">
+  <div class="rblock full"><div class="rblock-label">Por qué se ha llegado a esta ruta</div><div class="rblock-text">${pr.why}</div></div>
+  <div class="rblock"><div class="rblock-label">Solución recomendada</div><div style="margin-bottom:.5rem">${tools}</div><div class="rblock-text">${pr.dir}</div></div>
+  <div class="rblock"><div class="rblock-label">Presupuesto orientativo · 5 usuarios</div>
+   <div class="budget-row"><span class="budget-label">CAPEX inicial</span><span class="budget-value">${b.capex}</span></div>
+   <div class="budget-row"><span class="budget-label">OPEX licencias</span><span class="budget-value">${b.opex}</span></div>
+   <div class="budget-row"><span class="budget-label">TCO estimado</span><span class="budget-value">${b.tco}</span></div>
+   <div class="budget-row"><span class="budget-label">Payback</span><span class="budget-value">${b.payback}</span></div></div>
+  <div class="rblock full"><div class="rblock-label">Hoja de ruta</div>${steps}
+   <div style="margin-top:.6rem;font-size:10px;color:var(--text-muted);font-family:Arial,sans-serif">Anexo A · perfil ${pr.id} — Tabla 15 (presupuestos) · ${isT1?(r==='B'?'epígrafe 5.2.2':'epígrafe 5.2.3'):(sem==='red'?'epígrafes 5.2.1 y 6.2':'epígrafes 5.2.1 y 5.2.4')}</div></div>
+ </div>`;
+ el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>
